@@ -533,11 +533,9 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
     if(isReference == true){
         if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 0){
         
-            if(alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
-            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd <= 
+            if(labs(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition + 1) <= 
                 MaxDistance(scaffoldSetHead->minTimesRelocation*scaffoldSetHead->scaffoldSet[scaffoldIndex].gapDistance[gapIndex], scaffoldSetHead->minDistanceRelocationLength) &&
-            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
-            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd > 0){
+            labs(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition + 1) > 0){
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
                 return 0;
             }else{
@@ -548,11 +546,9 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
         }
         if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 1){
             
-            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
-            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd <= 
+            if(labs(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition + 1) <= 
                 MaxDistance(scaffoldSetHead->minTimesRelocation*scaffoldSetHead->scaffoldSet[scaffoldIndex].gapDistance[gapIndex], scaffoldSetHead->minDistanceRelocationLength) && 
-            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
-            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd > 0){
+            labs(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition + 1) > 0){
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
                 return 0;
             }else{
@@ -564,8 +560,7 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
     }else{
         if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 0){
         
-            if(alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
-            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd > 0){
+            if(labs(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition + 1) > 0){
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
                 return 0;
             }else{
@@ -576,8 +571,7 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
         }
         if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 1){
             
-            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
-            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd > 0){
+            if(labs(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition + 1) > 0){
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
                 return 0;
             }else{
