@@ -60,7 +60,7 @@ GET
 	-d <mininum distance>
 		Optional parameter. It is used to define Relocation gap. Default value 3000.
 	-a <mininum times>
-		Optional parameter. It is also used to define Relocation gap. Default value 2.
+		Optional parameter. It is also used to define Relocation gap. Default value 3.
 	
 5) Output:
 
