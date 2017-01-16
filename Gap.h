@@ -51,9 +51,10 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
 ScaffoldGapRegion * GetScaffoldGapRegionInReference(ScaffoldSetHead * scaffoldSetHead, AlignmentSetHead * alignmentSetHead, ContigSetHead * referenceContigSetHead, bool isReference);
 long int SearchReferenceIndexFromName(Contig * reference, long int referenceNumber, char * referenceName);
 void OutputScaffoldGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName);
-void OutputReferenceGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName);
-void OutputReferenceGapRegion1(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * referenceGapRegion, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName); 
-void CheckFillingGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * fillingGapRegion);
+
+void OutputReferenceGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * referenceGapRegion, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName); 
+
+long int MaxDistance(long int a, long int b);
 bool ReverseComplement(char * temp);
 
 int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaffoldSetHead, ScaffoldAlignmentIndex * scaffoldAlignmentIndex, AlignmentSetHead * alignmentSetHead);

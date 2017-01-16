@@ -21,11 +21,9 @@ ScaffoldAlignmentIndex * GetScaffoldAlignmentIndex(ScaffoldSetHead * scaffoldSet
             scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndexCount = 0;
         }
     }
-    //cout<<"bb--1"<<endl;
     for(long int i = 0; i < alignmentSetHead->alignmentCount; i++){
         scaffoldAlignmentIndex[alignmentSetHead->alignmentSet[i].scaffoldIndex].contigAlignmentIndex[alignmentSetHead->alignmentSet[i].contigIndex].alignmentIndexCount++;
     }
-    //cout<<"bb--2"<<endl;
     for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
         for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].contigCount; j++){
             if(scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndexCount > 0){
@@ -34,7 +32,6 @@ ScaffoldAlignmentIndex * GetScaffoldAlignmentIndex(ScaffoldSetHead * scaffoldSet
             }
         }
     }
-    //cout<<"bb--3"<<endl;
     for(long int i = 0; i < alignmentSetHead->alignmentCount; i++){
         scaffoldAlignmentIndex[alignmentSetHead->alignmentSet[i].scaffoldIndex].contigAlignmentIndex[alignmentSetHead->alignmentSet[i].contigIndex].alignmentIndex[scaffoldAlignmentIndex[alignmentSetHead->alignmentSet[i].scaffoldIndex].contigAlignmentIndex[alignmentSetHead->alignmentSet[i].contigIndex].alignmentIndexCount] = i;
         scaffoldAlignmentIndex[alignmentSetHead->alignmentSet[i].scaffoldIndex].contigAlignmentIndex[alignmentSetHead->alignmentSet[i].contigIndex].alignmentIndexCount++;
@@ -50,8 +47,6 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
         if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
             continue;
         }
-        //cout<<endl;
-        //cout<<"scaffoldIndexOptimize:"<<i<<endl;
         long int tempUniqueLength = 0;
         long int tempUniqueMaxIndex = -1;
         long int tempLength = 0;
@@ -90,13 +85,9 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
             scaffoldAlignmentIndex[i].contigAlignmentIndex[tempMaxIndex].alignmentIndex[0] = tempIndex;
             tempUniqueMaxIndex = tempMaxIndex;
         }
-        //cout<<"max:"<<i<<"--"<<tempUniqueMaxIndex<<endl;
         long int noMapContigCount = 0;
         if(tempUniqueMaxIndex != -1){
-            //cout<<"ss"<<endl;
             for(long int p = tempUniqueMaxIndex + 1; p < scaffoldSetHead->scaffoldSet[i].contigCount; p++){
-                //cout<<"Left-p:"<<p<<endl;
-                //cout<<"all:"<<scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount<<endl;
                 if(scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount == 0){
                     continue;
                 }
@@ -110,27 +101,24 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
                     tempP--;
                 }
                 long int tempUniqueMaxIndexAlignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p - 1 - noMapContigCount].alignmentIndex[0];
-                //cout<<"tempUniqueMaxIndexAlignmentIndex:"<<tempUniqueMaxIndexAlignmentIndex<<endl;
-                //cout<<"count:"<<scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount<<endl;
                 if(scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount > 1){
                     long int maxContigOverlapLength = 0;
+                    long int alignmentIndex = -1;
                     for(long int q = 0; q < scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount; q++){
-                        long int alignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
+                        alignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
                         if(alignmentSetHead->alignmentSet[alignmentIndex].contigOverlapLength > maxContigOverlapLength){
                             maxContigOverlapLength = alignmentSetHead->alignmentSet[alignmentIndex].contigOverlapLength;
                         }
                     }
-                    //cout<<"ss--1"<<endl;
+                    maxContigOverlapLength = alignmentSetHead->alignmentSet[alignmentIndex].contigLength*0.96;
                     long int * tempDistance = (long int *)malloc(sizeof(long int)*scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount);
                     long int tempCount = 0;
-                    long int alignmentIndex = 0;
+                    alignmentIndex = 0;
 
                     for(long int q = 0; q < scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount; q++){
                         alignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
-                        //cout<<"alignmentIndex:"<<alignmentIndex<<endl;
                         if(SearchReferenceIndexFromName(referenceContigSetHead->contigSet, referenceContigSetHead->contigCount, alignmentSetHead->alignmentSet[alignmentIndex].referenceName) 
                            != SearchReferenceIndexFromName(referenceContigSetHead->contigSet, referenceContigSetHead->contigCount, alignmentSetHead->alignmentSet[tempUniqueMaxIndexAlignmentIndex].referenceName)){
-                            //cout<<"ss--2"<<endl;
                             scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q] = -1;
                             tempDistance[q] = -1;
                             continue;
@@ -148,7 +136,6 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
                         tempDistance[q] = alignmentSetHead->alignmentSet[alignmentIndex].referenceStart - alignmentSetHead->alignmentSet[tempUniqueMaxIndexAlignmentIndex].referenceEnd;
                         tempCount++;
                     }
-                    //cout<<"tempCount:"<<tempCount<<endl;
                     if(tempCount == 0){
                         free(scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex);
                         scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex = NULL;
@@ -200,7 +187,6 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
                     tempDistance = NULL;
                 }
             }
-            //cout<<"tt"<<endl;
             noMapContigCount = 0;
             for(long int p = tempUniqueMaxIndex - 1; p >= 0; p--){
                 
@@ -218,52 +204,46 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
                 }
                 
                 long int tempUniqueMaxIndexAlignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p + 1 + noMapContigCount].alignmentIndex[0];
-                //cout<<"Right-p:"<<p<<"--"<<scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[0]<<"*rever:"<<alignmentSetHead->alignmentSet[scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[0]].isReverse<<endl;
-                //cout<<"tempUniqueMaxIndexAlignmentIndex:"<<tempUniqueMaxIndexAlignmentIndex<<endl;
-                //cout<<"count:"<<scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount<<endl;
-                
                 
                 if(scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount > 1){
                     long int maxContigOverlapLength = 0;
+                    long int alignmentIndex = -1;
                     for(long int q = 0; q < scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount; q++){
-                        long int alignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
+                        alignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
                         if(alignmentSetHead->alignmentSet[alignmentIndex].contigOverlapLength > maxContigOverlapLength){
                             maxContigOverlapLength = alignmentSetHead->alignmentSet[alignmentIndex].contigOverlapLength;
                         }
                     }
-                    //cout<<"maxContigOverlapLength:"<<maxContigOverlapLength<<endl;
+                    maxContigOverlapLength = alignmentSetHead->alignmentSet[alignmentIndex].contigLength*0.96;
                     long int * tempDistance = (long int *)malloc(sizeof(long int)*scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount);
                     long int tempCount = 0;
-                    long int alignmentIndex = 0;
+                    alignmentIndex = 0;
                     for(long int q = 0; q < scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount; q++){
                         alignmentIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
-                        //cout<<"q:"<<q<<"--alignmentIndex:"<<alignmentIndex<<endl;
                         if(SearchReferenceIndexFromName(referenceContigSetHead->contigSet, referenceContigSetHead->contigCount, alignmentSetHead->alignmentSet[alignmentIndex].referenceName) 
                            != SearchReferenceIndexFromName(referenceContigSetHead->contigSet, referenceContigSetHead->contigCount, alignmentSetHead->alignmentSet[tempUniqueMaxIndexAlignmentIndex].referenceName)){
-                            //cout<<"name:"<<alignmentSetHead->alignmentSet[alignmentIndex].referenceName<<endl;
-                            //cout<<"iidede:"<<SearchReferenceIndexFromName(referenceContigSetHead->contigSet, referenceContigSetHead->contigCount, alignmentSetHead->alignmentSet[alignmentIndex].referenceName)<<"--"<<alignmentSetHead->alignmentSet[alignmentIndex].scaffoldIndex<<endl;
                             scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q] = -1;
                             tempDistance[q] = -1;
                             continue;
                         }
-                        //cout<<"aa--"<<alignmentSetHead->alignmentSet[alignmentIndex].isReverse<<"--"<<alignmentSetHead->alignmentSet[tempUniqueMaxIndexAlignmentIndex].isReverse<<endl;
+                        
                         if(alignmentSetHead->alignmentSet[alignmentIndex].isReverse != alignmentSetHead->alignmentSet[tempUniqueMaxIndexAlignmentIndex].isReverse){
-                            //cout<<"aa0"<<endl;
+
                             scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q] = -1;
                             tempDistance[q] = -1;
                             continue;
                         }
-                        //cout<<"bb"<<endl;
+
                         if(alignmentSetHead->alignmentSet[alignmentIndex].contigOverlapLength < maxContigOverlapLength){
                             scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q] = -1;
                             tempDistance[q] = -1;
                             continue;
                         }
-                        //cout<<"cc"<<endl;
+
                         tempDistance[q] = alignmentSetHead->alignmentSet[tempUniqueMaxIndexAlignmentIndex].referenceStart - alignmentSetHead->alignmentSet[alignmentIndex].referenceEnd;
                         tempCount++;
                     }
-                    //cout<<"tempCount:"<<tempCount<<endl;
+
                     if(tempCount == 0){
                         free(scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex);
                         scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex = NULL;
@@ -287,7 +267,7 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
                             alignmentIndex1 = scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex[q];
                         }
                     }
-                    //cout<<"minDistance:"<<minDistance<<"--"<<"maxDistance:"<<maxDistance<<endl;
+
                     free(scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex);
                     scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndex = (long int *)malloc(sizeof(long int));
                     scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount = 1;
@@ -312,17 +292,25 @@ int OptimizeScaffoldAlignmentIndex(ContigSetHead * referenceContigSetHead, Scaff
                             scaffoldAlignmentIndex[i].contigAlignmentIndex[p].alignmentIndexCount = 0;
                         }
                     }
-                    //cout<<"end"<<endl;
+
                     free(tempDistance);
                     tempDistance = NULL;
                 }
             }
-            //cout<<"pp"<<endl;
+
         }
         
     }
     return 1;
     
+}
+
+long int MaxDistance(long int a, long int b){
+    if(a >= b){
+        return a;
+    }else{
+        return b;
+    }
 }
 
 int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaffoldSetHead, ScaffoldAlignmentIndex * scaffoldAlignmentIndex, AlignmentSetHead * alignmentSetHead, ScaffoldGapRegion * scaffoldGapRegion, long int scaffoldIndex, long int leftContigIndex, long int rightContigIndex, long int gapIndex, bool isReference){
@@ -344,7 +332,6 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
     long int leftAlignmentIndex = -1;
     long int rightAlignmentIndex = -1;
     long int tempPosition = -1;
-    //long int tempPosition1 = 2*scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldLength;
     double identityPercent = 0; 
     long int tempContigOverlapLength = 0;
     
@@ -375,8 +362,9 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
                 alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd + 1;
             scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftContigEndPosition = 
                 alignmentSetHead->alignmentSet[leftAlignmentIndex].contigEnd;
-            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigEnd - 1 > 200){
+            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigEnd - 1 > scaffoldSetHead->minSegmentDistanceEndLength){
                 leftAlignmentIndex = -1;
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition = -1;
             }else{
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition = scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition
                     + alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigEnd - 1;
@@ -387,11 +375,12 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
                 alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 1;
             scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftContigEndPosition = 
                 alignmentSetHead->alignmentSet[leftAlignmentIndex].contigStart;
-            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigStart - 1 > 200){
+            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigStart - 1 > scaffoldSetHead->minSegmentDistanceEndLength){
                 leftAlignmentIndex = -1; 
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition = -1;
             }else{
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition = scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftStartPosition
-                   - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength + alignmentSetHead->alignmentSet[leftAlignmentIndex].contigStart - 1;
+                   - alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength + alignmentSetHead->alignmentSet[leftAlignmentIndex].contigStart + 1;
             }
         }
         if(leftAlignmentIndex != -1){
@@ -411,53 +400,10 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
     for(long int i = 0; i < rightContigAlignmentIndexCount; i++){
         
         int token = 0;
-        /*
-        if(rightAlignmentIndex != -1){
-            if(labs(rightContigAlignmentIndex[i] - rightAlignmentIndex) > 1){
-                long int previousStart = 0;
-                long int previousEnd = 0;
-                long int start = 0;
-                long int end = 0;
-                if(alignmentSetHead->alignmentSet[rightAlignmentIndex].contigEnd > alignmentSetHead->alignmentSet[rightAlignmentIndex].contigStart){
-                    previousStart = alignmentSetHead->alignmentSet[rightAlignmentIndex].contigStart;
-                    previousEnd = alignmentSetHead->alignmentSet[rightAlignmentIndex].contigEnd;
-                }else{
-                    previousEnd = alignmentSetHead->alignmentSet[rightAlignmentIndex].contigStart;
-                    previousStart = alignmentSetHead->alignmentSet[rightAlignmentIndex].contigEnd;
-                }
-                if(alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigEnd > alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigStart){
-                    previousStart = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigStart;
-                    previousEnd = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigEnd;
-                }else{
-                    previousEnd = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigStart;
-                    previousStart = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigEnd;
-                }
-                long int over = 0;
-                if(previousStart < start){
-                    over = previousEnd - start + 1;
-                }else{
-                    over = end - previousStart + 1;
-                }
-                
-                if(over > 0){
-                    if((double)over/(double)tempContigOverlapLength > 0.99){
-                        token = 1;
-                    }
-                }
-            } 
-        }
-        */
         if(alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].isReverse == 0){
             if(token == 0 && isReference == true && alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigStart > tempPosition){
                 continue;
             }
-            /*
-            else if(isReference == true && alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigStart >= tempPosition - 2){
-                if(alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigOverlapLength < tempContigOverlapLength){
-                    continue;
-                }
-            }
-            */
             tempPosition = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigStart;
             tempContigOverlapLength = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigOverlapLength;
             rightAlignmentIndex = rightContigAlignmentIndex[i];
@@ -467,13 +413,6 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
             if(token == 0 && isReference == true && alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigEnd > tempPosition){
                 continue;
             }
-            /*
-            else if(isReference == true && alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigEnd >= tempPosition - 2){
-                if(alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigOverlapLength < tempContigOverlapLength){
-                    continue;
-                }
-            }
-            */
             tempPosition = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigEnd;
             tempContigOverlapLength = alignmentSetHead->alignmentSet[rightContigAlignmentIndex[i]].contigOverlapLength;
             rightAlignmentIndex = rightContigAlignmentIndex[i];
@@ -486,22 +425,24 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
                 alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 1;
             scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition = 
                 alignmentSetHead->alignmentSet[rightAlignmentIndex].contigStart;
-            if(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition > 200){
+            if(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition > scaffoldSetHead->minSegmentDistanceEndLength){
                 rightAlignmentIndex = -1;
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition = -1;
             }else{
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition = scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition
-                    - scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition;
+                    - alignmentSetHead->alignmentSet[rightAlignmentIndex].contigStart;
             }
         }else{
             scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition = 
-                alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd;
+                alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd + 1;
             scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition = 
-                alignmentSetHead->alignmentSet[rightAlignmentIndex].contigEnd - 1;
-            if(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition > 200){
+                alignmentSetHead->alignmentSet[rightAlignmentIndex].contigEnd;
+            if(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition > scaffoldSetHead->minSegmentDistanceEndLength){
                 rightAlignmentIndex = -1;
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition = -1;
             }else{
                 scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition = scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightStartPosition
-                    + scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightContigStartPosition;
+                    + alignmentSetHead->alignmentSet[rightAlignmentIndex].contigEnd;
             }
             
         }
@@ -580,7 +521,6 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
     
     
     if(scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].rightReferenceIndex != scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].leftReferenceIndex){
-        //cout<<leftAlignmentIndex<<","<<rightAlignmentIndex<<endl;
         scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 11;//translocation gap;
         return 11;
     }
@@ -589,61 +529,64 @@ int GetGapRegion(ContigSetHead * referenceContigSetHead, ScaffoldSetHead * scaff
         scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 12;//inversion gap;
         return 12;
     }
-
-    if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 0 && 
-        alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
-        alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd > 
-            2*scaffoldSetHead->scaffoldSet[scaffoldIndex].gapDistance[gapIndex]  && 
-        alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
-        alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd > 2000 && labs(leftAlignmentIndex - rightAlignmentIndex) > 1){
-        scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 1;//relocation gap;
-        return 1;
-    }
     
-    if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 0 && 
-        alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart < 
-        alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd){
-        if(alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd - 
-          alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart <=
-          alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength && 
-          alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd - 
-          alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart <=
-          alignmentSetHead->alignmentSet[rightAlignmentIndex].contigLength){
-            scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 2;//overlap gap;
-            return 2;
-        }else{
-            scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 5;//relocation gap;
-            return 5;
+    if(isReference == true){
+        if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 0){
+        
+            if(alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
+            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd <= 
+                MaxDistance(scaffoldSetHead->minTimesRelocation*scaffoldSetHead->scaffoldSet[scaffoldIndex].gapDistance[gapIndex], scaffoldSetHead->minDistanceRelocationLength) &&
+            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
+            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd > 0){
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
+                return 0;
+            }else{
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 1;
+                return 1;
+            }
+            
+        }
+        if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 1){
+            
+            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
+            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd <= 
+                MaxDistance(scaffoldSetHead->minTimesRelocation*scaffoldSetHead->scaffoldSet[scaffoldIndex].gapDistance[gapIndex], scaffoldSetHead->minDistanceRelocationLength) && 
+            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
+            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd > 0){
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
+                return 0;
+            }else{
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 3;
+                return 3;
+            }
+            
+        }
+    }else{
+        if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 0){
+        
+            if(alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceStart - 
+            alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceEnd > 0){
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
+                return 0;
+            }else{
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 1;
+                return 1;
+            }
+            
+        }
+        if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 1){
+            
+            if(alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
+            alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd > 0){
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;
+                return 0;
+            }else{
+                scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 3;
+                return 3;
+            }
+            
         }
     }
-    
-    if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 1 && 
-        alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
-        alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd > 
-            2*scaffoldSetHead->scaffoldSet[scaffoldIndex].gapDistance[gapIndex] && 
-        alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart - 
-        alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd > 2000 && labs(leftAlignmentIndex - rightAlignmentIndex) > 1){
-        scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 3;//relocation gap;
-        return 3;
-    }
-    
-    if(alignmentSetHead->alignmentSet[leftAlignmentIndex].isReverse == 1 && 
-        alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart < 
-        alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd){
-        if(alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd - 
-          alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart <= 
-          alignmentSetHead->alignmentSet[rightAlignmentIndex].contigLength &&
-          alignmentSetHead->alignmentSet[rightAlignmentIndex].referenceEnd - 
-          alignmentSetHead->alignmentSet[leftAlignmentIndex].referenceStart <= 
-          alignmentSetHead->alignmentSet[leftAlignmentIndex].contigLength){
-            scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 4;//overlap gap;
-            return 4;
-        }else{
-            scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 6;//relocation gap;
-            return 6;
-        }
-    }
-    
     scaffoldGapRegion[scaffoldIndex].gapRegionSet[gapIndex].gapType = 0;//correct gap;
     return 0;
 }
@@ -673,75 +616,14 @@ ScaffoldGapRegion * GetScaffoldGapRegionInReference(ScaffoldSetHead * scaffoldSe
             scaffoldGapRegion[i].gapRegionSet[j].rightReferenceName = NULL;
         }
     }
-    //cout<<"bb"<<endl;
     
     ScaffoldAlignmentIndex * scaffoldAlignmentIndex = GetScaffoldAlignmentIndex(scaffoldSetHead, alignmentSetHead);
-    /*
-    for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
-        if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
-            continue;
-        }
-        long int tempIndex = -1;
-        cout<<"ff--original--"<<i<<endl;
-        for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].contigCount; j++){
-            if(scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndexCount <= 0){
-                continue;
-        }
-                tempIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndex[0];
-                cout<<i<<"--"<<j<<"--"<<scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndexCount<<endl;
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceStart<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceEnd<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigStart<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigEnd<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceOverlapLength<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigOverlapLength<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].identityPercent<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].isReverse<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigLength<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceName<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigName<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].scaffoldIndex<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigIndex<<endl;
-        }
-    }
-    cout<<"**************"<<endl;
-    */
+    
     if(isReference != true){
-        //cout<<"ee"<<endl;
         OptimizeScaffoldAlignmentIndex(referenceContigSetHead, scaffoldSetHead, scaffoldAlignmentIndex, alignmentSetHead);
-        //cout<<"ff"<<endl;
-        /*
-        for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
-            if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
-                continue;
-            }
-            long int tempIndex = -1;
-            cout<<"ff--optimize--"<<i<<endl;
-            for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].contigCount; j++){
-                if(scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndexCount <= 0){
-                    continue;
-                }
-                tempIndex = scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndex[0];
-                cout<<i<<"--"<<j<<"--"<<scaffoldAlignmentIndex[i].contigAlignmentIndex[j].alignmentIndexCount<<endl;
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceStart<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceEnd<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigStart<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigEnd<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceOverlapLength<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigOverlapLength<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].identityPercent<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].isReverse<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigLength<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].referenceName<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigName<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].scaffoldIndex<<"\t";
-                cout<<alignmentSetHead->alignmentSet[tempIndex].contigIndex<<endl;
-            }
-        }
-        */
     }
     
-    //cout<<"cc"<<endl;
+
     for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
         if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
             continue;
@@ -751,7 +633,7 @@ ScaffoldGapRegion * GetScaffoldGapRegionInReference(ScaffoldSetHead * scaffoldSe
         if(scaffoldSetHead->scaffoldSet[i].gapStartPosition[0] == 0){
             startIndex = -1;
         }
-        //cout<<"dd--"<<startIndex<<"--"<<scaffoldSetHead->scaffoldSet[i].gapCount<<endl;
+
         for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount - 1; j++){
             endIndex = startIndex + 1;
             GetGapRegion(referenceContigSetHead, scaffoldSetHead, scaffoldAlignmentIndex, alignmentSetHead, scaffoldGapRegion, i, startIndex, endIndex, j, isReference);
@@ -794,112 +676,6 @@ long int SearchReferenceIndexFromName(Contig * reference, long int referenceNumb
     return -1;
 }
 
-void OutputReferenceGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName){
-
-    FILE * fp;
-    if((fp = fopen(gapFileName, "w")) == NULL){
-        printf("%s, can not open!", gapFileName);
-        exit(0);
-    }
-    long int gapIndex = 0;
-    for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
-        if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
-            continue;
-        }
-        
-        for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount; j++){
-            fprintf(fp, ">scaffold_%ld_%ld_%ld_%d\n", i, j, gapIndex, scaffoldGapRegion[i].gapRegionSet[j].gapType);
-            if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 0){
-                long int referenceIndex = scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex;
-                long int gapLength = labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                char * tempGap = (char *)malloc(sizeof(char)*(gapLength + 1));
-                if(scaffoldGapRegion[i].gapRegionSet[j].leftReverse != true){
-                    strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition, gapLength);
-                    tempGap[gapLength] = '\0';
-                }else{
-                    strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition, gapLength);
-                    tempGap[gapLength] = '\0';
-                    ReverseComplement(tempGap);
-                }
-                fprintf(fp, "%s\n", tempGap);
-                free(tempGap);
-            }else{
-                if(scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex != -1){
-                    long int referenceIndex = scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex;
-                    long int gapLength = 0;
-                    if(scaffoldGapRegion[i].gapRegionSet[j].gapType < 10){
-                        gapLength = labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                        if(gapLength > 2000){
-                            gapLength = 2000;
-                        }
-                    }else{
-                        gapLength = scaffoldSetHead->scaffoldSet[i].gapDistance[j];
-                    }
-                    //fprintf(fp, "%ld\t%ld\n", referenceIndex, gapLength);
-                    char * tempGap = (char *)malloc(sizeof(char)*(gapLength + 1));
-                    if(scaffoldGapRegion[i].gapRegionSet[j].leftReverse != true){
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition, gapLength);
-                        tempGap[gapLength] = '\0';
-                    }else{
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition - gapLength + 1, gapLength);
-                        tempGap[gapLength] = '\0';
-                        ReverseComplement(tempGap);
-                    }
-                    fprintf(fp, "%s\n", tempGap);
-                    free(tempGap);
-                }
-                if(scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex != -1){
-                    if(scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex == -1){
-                        //fprintf(fp, ">scaffold_%ld_%ld_%ld_%d\n", i, j, gapIndex, scaffoldGapRegion[i].gapRegionSet[j].gapType, scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex, labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1);
-                    }
-                    
-                    long int referenceIndex = scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex;
-                    long int gapLength = 0;
-                    if(scaffoldGapRegion[i].gapRegionSet[j].gapType < 10){
-                        gapLength = labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                        if(gapLength > 2000){
-                            gapLength = 2000;
-                        }
-                    }else{
-                        gapLength = scaffoldSetHead->scaffoldSet[i].gapDistance[j];
-                    }
-                    
-                    
-                    char * tempGap = (char *)malloc(sizeof(char)*(gapLength + 1));
-                    
-                    if(scaffoldGapRegion[i].gapRegionSet[j].rightReverse != true){
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - gapLength + 1, gapLength);
-                        tempGap[gapLength] = '\0';
-                    }else{
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition, gapLength);
-                        tempGap[gapLength] = '\0';
-                        ReverseComplement(tempGap);
-                    }
-                    fprintf(fp, "%s\n", tempGap);
-                    free(tempGap);
-                }
-            }
-            gapIndex++;
-        }
-        
-        /*
-        cout<<"scaffold:"<<i<<endl;
-        for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount; j++){
-            cout<<setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].gapType<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition<<"\t"<<
-            //setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].leftContigEndPosition<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition<<"\t"<<
-            //setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].rightContigStartPosition<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].leftReverse<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].rightReverse<<"\t"<<
-            setw(10)<<scaffoldSetHead->scaffoldSet[i].gapDistance[j]<<"\t"<<endl;
-        }
-        */
-    }
-    fflush(fp);
-    fclose(fp);
-}
-
 void OutputScaffoldGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName){
 
     FILE * fp;
@@ -918,8 +694,7 @@ void OutputScaffoldGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegio
             if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 0){
                 long int referenceIndex = scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex;
                 long int gapLength = labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                //cout<<"referenceIndex:"<<referenceIndex<<","<<gapLength<<endl;
-                //cout<<referenceContigSetHead->contigSet[referenceIndex].contig<<endl;
+                
                 char * tempGap = (char *)malloc(sizeof(char)*(gapLength + 1));
                 if(scaffoldGapRegion[i].gapRegionSet[j].leftReverse != true){
                     strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition, gapLength);
@@ -931,83 +706,16 @@ void OutputScaffoldGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegio
                 }
                 fprintf(fp, "%s\n", tempGap);
                 free(tempGap);
-            }else{
-                if(scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex != -1){
-                    long int referenceIndex = scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex;
-                    long int gapLength = 0;
-                    long int t = 0;
-                    if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 2 || scaffoldGapRegion[i].gapRegionSet[j].gapType == 4){
-                        gapLength = labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                        t = gapLength;
-                    }else{
-                        gapLength = scaffoldSetHead->scaffoldSet[i].gapDistance[j];
-                    }
-                    //fprintf(fp, "%ld\t%ld\n", referenceIndex, gapLength);
-                    char * tempGap = (char *)malloc(sizeof(char)*(gapLength + 1));
-                    if(scaffoldGapRegion[i].gapRegionSet[j].leftReverse != true){
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition - t, gapLength);
-                        tempGap[gapLength] = '\0';
-                    }else{
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition - gapLength + t + 1, gapLength);
-                        tempGap[gapLength] = '\0';
-                        ReverseComplement(tempGap);
-                    }
-                    fprintf(fp, "%s\n", tempGap);
-                    free(tempGap);
-                }
-                if(scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex != -1){
-                    if(scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex == -1){
-                        //fprintf(fp, ">scaffold_%ld_%ld_%ld_%d\n", i, j, gapIndex, scaffoldGapRegion[i].gapRegionSet[j].gapType, scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex, labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1);
-                    }
-                    
-                    long int referenceIndex = scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex;
-                    long int gapLength = 0;
-                    long int t = 0;
-                    if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 2 || scaffoldGapRegion[i].gapRegionSet[j].gapType == 4){
-                        gapLength = labs(scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                        t = gapLength;
-                    }else{
-                        gapLength = scaffoldSetHead->scaffoldSet[i].gapDistance[j];
-                    }
-                    
-                    
-                    char * tempGap = (char *)malloc(sizeof(char)*(gapLength + 1));
-                    
-                    if(scaffoldGapRegion[i].gapRegionSet[j].rightReverse != true){
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - gapLength + t + 1, gapLength);
-                        tempGap[gapLength] = '\0';
-                    }else{
-                        strncpy(tempGap, referenceContigSetHead->contigSet[referenceIndex].contig + scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition - t, gapLength);
-                        tempGap[gapLength] = '\0';
-                        ReverseComplement(tempGap);
-                    }
-                    fprintf(fp, "%s\n", tempGap);
-                    free(tempGap);
-                }
             }
             gapIndex++;
         }
-        
-        /*
-        cout<<"scaffold:"<<i<<endl;
-        for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount; j++){
-            cout<<setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].gapType<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition<<"\t"<<
-            //setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].leftContigEndPosition<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition<<"\t"<<
-            //setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].rightContigStartPosition<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].leftReverse<<"\t"<<
-            setw(10)<<scaffoldGapRegion[i].gapRegionSet[j].rightReverse<<"\t"<<
-            setw(10)<<scaffoldSetHead->scaffoldSet[i].gapDistance[j]<<"\t"<<endl;
-        }
-        */
     }
     fflush(fp);
     fclose(fp);
 }
 
 
-void OutputReferenceGapRegion1(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * referenceGapRegion, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName){
+void OutputReferenceGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * referenceGapRegion, ScaffoldGapRegion * scaffoldGapRegion, ContigSetHead * referenceContigSetHead, char * gapFileName){
 
     FILE * fp;
     if((fp = fopen(gapFileName, "w")) == NULL){
@@ -1022,7 +730,6 @@ void OutputReferenceGapRegion1(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapReg
         for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount; j++){
             long int count = OutputMinContigAsGap(scaffoldSetHead, i, j);
             fprintf(fp, ">scaffold_%ld_%ld_%ld_%d_%ld\n", i, j, gapIndex, referenceGapRegion[i].gapRegionSet[j].gapType, count);
-            //printf(">scaffold_%ld_%ld_%ld_%d\n", i, j, gapIndex, referenceGapRegion[i].gapRegionSet[j].gapType);
             fflush(stdout);
             if(referenceGapRegion[i].gapRegionSet[j].gapType == 0){
                 long int referenceIndex = referenceGapRegion[i].gapRegionSet[j].leftReferenceIndex;
@@ -1045,7 +752,6 @@ void OutputReferenceGapRegion1(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapReg
                     long int gapLength = fillingGapLength;
                     if(referenceGapRegion[i].gapRegionSet[j].gapType == 2 || referenceGapRegion[i].gapRegionSet[j].gapType == 4){
                         gapLength = labs(referenceGapRegion[i].gapRegionSet[j].rightStartPosition - referenceGapRegion[i].gapRegionSet[j].leftStartPosition) + 1;
-                        cout<<"overlap-gapLength:"<<gapLength<<endl;
                     }else if(scaffoldGapRegion[i].gapRegionSet[j].gapType > 0){
                         gapLength = scaffoldSetHead->scaffoldSet[i].gapDistance[j];
                     }
@@ -1063,10 +769,6 @@ void OutputReferenceGapRegion1(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapReg
                     free(tempGap);
                 }
                 if(referenceGapRegion[i].gapRegionSet[j].rightReferenceIndex != -1){
-                    if(referenceGapRegion[i].gapRegionSet[j].leftReferenceIndex == -1){
-                        //fprintf(fp, ">scaffold_%ld_%ld_%ld_%d\n", i, j, gapIndex, referenceGapRegion[i].gapRegionSet[j].gapType);
-                    }
-                    
                     long int referenceIndex = referenceGapRegion[i].gapRegionSet[j].rightReferenceIndex;
                     long int gapLength = fillingGapLength;
                     if(referenceGapRegion[i].gapRegionSet[j].gapType == 2 || referenceGapRegion[i].gapRegionSet[j].gapType == 4){
@@ -1088,37 +790,12 @@ void OutputReferenceGapRegion1(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapReg
                     free(tempGap);
                 }
             }
-            //printf("end\n");
             fflush(fp);
             gapIndex++;
         }
     }
     fflush(fp);
     fclose(fp);
-}
-
-void CheckFillingGapRegion(ScaffoldSetHead * scaffoldSetHead, ScaffoldGapRegion * fillingGapRegion){
-    long int count = 0;
-    for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
-        if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
-            continue;
-        }
-        for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount; j++){
-            if(fillingGapRegion[i].gapRegionSet[j].gapType >= 10 && fillingGapRegion[i].gapRegionSet[j].gapType <=20){
-                cout<<i<<"--"<<j<<"--"<<fillingGapRegion[i].gapRegionSet[j].gapType<<endl;
-                cout<<fillingGapRegion[i].gapRegionSet[j].leftStartPosition<<"--"<<fillingGapRegion[i].gapRegionSet[j].rightStartPosition<<endl;
-                count++;
-            }
-            if(fillingGapRegion[i].gapRegionSet[j].gapType !=0 ){
-                cout<<"!0="<<i<<"--"<<j<<"--"<<fillingGapRegion[i].gapRegionSet[j].gapType<<endl;
-            }
-        }
-        
-    }
-    if(count > 0){
-        printf("filling result contradictory\n");
-        //exit(1);
-    }
 }
 
 long int OutputMinContigAsGap(ScaffoldSetHead * scaffoldSetHead, long int i, long int j){
@@ -1227,7 +904,7 @@ void OutputGapInScaffoldInformation(ScaffoldSetHead * scaffoldSetHead, ScaffoldG
             continue;
         }
         for(long int j = 0; j < scaffoldSetHead->scaffoldSet[i].gapCount; j++){
-            //fprintf(fp, "%8ld%8ld\t%8ld\t%5d\t%12ld\t%12ld\t%12ld\t%12ld\t%8ld\t%8ld\t%8ld\t%8ld\t%3d\t%3d\n", gapCount, i, j, scaffoldGapRegion[i].gapRegionSet[j].gapType, scaffoldSetHead->scaffoldSet[i].gapStartPosition[j], scaffoldSetHead->scaffoldSet[i].gapStartPosition[j] + scaffoldSetHead->scaffoldSet[i].gapDistance[j] - 1,scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition, scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition, j, j+1, scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex, scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex, scaffoldGapRegion[i].gapRegionSet[j].leftReverse, scaffoldGapRegion[i].gapRegionSet[j].rightReverse);
+            
             fprintf(fp, "%-s\t", scaffoldSetHead->scaffoldSet[i].scaffoldName);
             
             fprintf(fp, "%-ld\t", scaffoldSetHead->scaffoldSet[i].gapStartPosition[j]);
@@ -1243,27 +920,32 @@ void OutputGapInScaffoldInformation(ScaffoldSetHead * scaffoldSetHead, ScaffoldG
             fprintf(fp, "%-s\t", scaffoldGapRegion[i].gapRegionSet[j].rightReferenceName);
             fprintf(fp, "%-d\t", scaffoldGapRegion[i].gapRegionSet[j].leftReverse);
             fprintf(fp, "%-d\t", scaffoldGapRegion[i].gapRegionSet[j].rightReverse);
-            fprintf(fp, "%-d\t", scaffoldGapRegion[i].gapRegionSet[j].gapType);
+            if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 0){
+                fprintf(fp, "Normal\t");
+            }else if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 1 || scaffoldGapRegion[i].gapRegionSet[j].gapType == 3){
+                fprintf(fp, "Relocation\t");
+            }else if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 21 || scaffoldGapRegion[i].gapRegionSet[j].gapType == 22 || scaffoldGapRegion[i].gapRegionSet[j].gapType == 23){
+                fprintf(fp, "Missing\t");
+            }else if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 11){
+                fprintf(fp, "Translocation\t");
+            }else if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 12){
+                fprintf(fp, "Inversion\t");
+            }else{
+                fprintf(fp, "undefined\t");
+            }
             
             fprintf(fp, "%-s\t", fillingGapRegion[i].gapRegionSet[j].leftReferenceName);
             fprintf(fp, "%-s\t", fillingGapRegion[i].gapRegionSet[j].rightReferenceName);
             fprintf(fp, "%-d\t", fillingGapRegion[i].gapRegionSet[j].leftReverse);
             fprintf(fp, "%-d\t", fillingGapRegion[i].gapRegionSet[j].rightReverse);
-            fprintf(fp, "%-d\t", fillingGapRegion[i].gapRegionSet[j].gapType);
+            //fprintf(fp, "%-d\t", fillingGapRegion[i].gapRegionSet[j].gapType);
             
             fprintf(fp, "\n");
-            //fprintf(fp, "%-ld%\t-ld\t%-ld\t%-d\t%-ld\t%-ld\t%-ld\t%-ld\t%-ld\t%-ld\t%-ld\t%-ld\t%-d\t%-d\n", gapCount, i, j, scaffoldGapRegion[i].gapRegionSet[j].gapType, scaffoldSetHead->scaffoldSet[i].gapStartPosition[j], scaffoldSetHead->scaffoldSet[i].gapStartPosition[j] + scaffoldSetHead->scaffoldSet[i].gapDistance[j] - 1,scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition, scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition, j, j+1, scaffoldGapRegion[i].gapRegionSet[j].leftReferenceIndex, scaffoldGapRegion[i].gapRegionSet[j].rightReferenceIndex, scaffoldGapRegion[i].gapRegionSet[j].leftReverse, scaffoldGapRegion[i].gapRegionSet[j].rightReverse);
-            if(scaffoldGapRegion[i].gapRegionSet[j].gapType == 0){
-                cout<<i<<"--"<<j<<"--"<<labs(scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition - scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition)<<endl;
-                cout<<scaffoldSetHead->scaffoldSet[i].gapDistance[j]<<endl;
-                len = len + labs(scaffoldGapRegion[i].gapRegionSet[j].leftStartPosition - scaffoldGapRegion[i].gapRegionSet[j].rightStartPosition);
-            }
-            
             gapCount++;
         }
         
     }
-    cout<<len<<endl;
+
     fflush(fp);
     fclose(fp);
 }

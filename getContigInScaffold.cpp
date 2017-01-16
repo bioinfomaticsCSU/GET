@@ -12,7 +12,7 @@ using namespace std;
  
 int main(int argc, char *argv[])
 {
-    ScaffoldSetHead * scaffoldSetHead = GetScaffoldSetFromScaffoldFile(argv[1]);
+    ScaffoldSetHead * scaffoldSetHead = GetScaffoldSetFromScaffoldFile(argv[1], atoi(argv[3]));
 
     OutputContigSetOfScaffoldSet(scaffoldSetHead, argv[2]);
 }

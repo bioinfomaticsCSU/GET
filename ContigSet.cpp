@@ -66,14 +66,6 @@ ContigSetHead * GetContigSet(char * contigSetFile){
            contigSetHead->contigSet[contigIndex].contigName = (char*)malloc(sizeof(char)*(strlen(contig)-1));
            strncpy(contigSetHead->contigSet[contigIndex].contigName, contig+1, strlen(contig)-2); 
            contigSetHead->contigSet[contigIndex].contigName[strlen(contig)-2] = '\0';
-           
-           /*
-           char * p = strtok(contig, " ");
-           contigSetHead->contigSet[contigIndex].contigName = (char *)malloc(sizeof(char)*(strlen(p)+10));
-           strncpy(contigSetHead->contigSet[contigIndex].contigName, p, strlen(p));
-           sprintf(contigSetHead->contigSet[contigIndex].contigName + strlen(p), "_%ld", contigIndex);
-           
-           */
            continue;
            
        }

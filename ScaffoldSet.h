@@ -31,10 +31,13 @@ typedef struct ScaffoldSetHead{
    long int gapCount;
    long int minGapDistance;
    long int minContigLength;
+   long int minSegmentDistanceEndLength;
+   long int minDistanceRelocationLength;
+   long int minTimesRelocation;
 }ScaffoldSetHead;
 
 
-ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName);
+ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName, long int minContigLength);
 void GetGapInScaffoldSet(ScaffoldSetHead * scaffoldSetHead);
 void OutputContigSetOfScaffoldSet(ScaffoldSetHead * scaffoldSetHead, char * contigSetFile);
 void WriteScaffoldSet(ScaffoldSetHead * scaffoldSetHead, char * scaffoldSetInforFile);

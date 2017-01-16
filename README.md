@@ -44,9 +44,41 @@ GET
 4) Running
 
 	Run command line:  
-	perl evaluate_gap_filling.pl original_scaffolds.fa gap-filled_scaffolds.fa reference_genome.fa output_directory 
-
+	perl evaluate_gap_filling.pl -s original_scaffolds.fa -f gap-filled_scaffolds.fa -r reference_genome.fa -o output_directory [options]
+	-s <scaffold file>
+		Mandatory parameter. It points out the original scaffold file.
+	-f <gap-filled scaffold file>
+		Mandatory parameter. It points out the gap-filled scaffold file.
+	-r <reference genome file>
+		Mandatory parameter. It points out the reference genome file.
+	-o <output directory>
+		Mandatory parameter. It points out the output directory.
+	-c <mininum contig length>
+		Optional parameter. When the length of a sub-contig is shorter than this mininum value, it will be ingored as gap region. Default value 100.
+	-m <minimum distance>
+		Optional parameter. If the left-most (or right-most) aligned segment of a sub-contig aligns over this minimum value from the starting (or ending) position of the sub-contig, the sub-contig will be regarded as non-aligned when it is considered as a right (or left) flanking sub-contig of a gap. Default value 200.
+	-d <mininum distance>
+		Optional parameter. It is used to define Relocation gap. Default value 3000.
+	-a <mininum times>
+		Optional parameter. It is also used to define Relocation gap. Default value 2.
+	
 5) Output:
 
-	The final evaluation result is named "result.txt" in the output_directory.
-
+	The final evaluation result is named "result.txt" in the output directory.
+	The first column is the gap type, it shows the evaluation mertics from second column to nine column based on each gap type.
+	The last row shows the evaluation metrics based on all gap types.
+	An example of result.txt:
+	Gap Type            	Gap Count 	Reference Gap Length	Gap-filled Length   	Match Number   	Mis-match Number    	Precision 	Recall  	F1-score  
+	Missing Gap         	0         	0                   	0                   	0              	0                   	-         	-       	-         
+	Translocation Gap   	0         	0                   	0                   	0              	0                   	-         	-       	-         
+	Inversion Gap       	11        	154                 	139                 	135            	4                   	0.971     	0.877   	0.922     
+	Relocation Gap      	50        	6172                	5720                	5679           	41                  	0.993     	0.920   	0.955     
+	Normal Gap          	64        	17954               	10149               	9977           	172                 	0.983     	0.556   	0.710     
+	All Gap             	125       	24280               	16008               	15791          	217                 	0.986     	0.650   	0.784    
+	
+	The gap locations on the original scaffold, gap-filled scaffold and the reference genome are showed in the file "infor.txt".  
+	
+	
+	
+	
+	

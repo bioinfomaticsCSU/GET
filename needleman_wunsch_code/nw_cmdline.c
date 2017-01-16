@@ -328,7 +328,7 @@ void align_from_file(SEQ_FILE *seq1, SEQ_FILE *seq2)
 }
 
 
-double align1(char* seq_a, char* seq_b, int * c, int * m)
+double align1(char* seq_a, char* seq_b, long int * c, long int * m)
 {
   // Variables to store alignment result
   char *alignment_a, *alignment_b;
@@ -533,27 +533,22 @@ int main(int argc, char* argv[])
   long int realGapLength[6] = {0, 0, 0, 0, 0, 0};
   long int fillingGapLength[6] = {0, 0, 0, 0, 0, 0};
   long int gap_count[6] = {0, 0, 0, 0, 0, 0};
-  fprintf(fp, "All Gap Count:\t%ld\n", gapCount);
+
   while(i < gapCount){
-      //fprintf(fp, ">gapIndex_%ld_%d\n", i, referenceGapSet[i].gapType);
-      //fprintf(fp, ">gapIndex_%ld_%d\n", i, fillingGapSet[i].gapType);
-      int a = 0;
-      int b = 0;
-      int * c = &a;
-      int * m = &b;
+
+      long int a = 0;
+      long int b = 0;
+      long int * c = &a;
+      long int * m = &b;
       if(referenceGapSet[i].firstGap != NULL && fillingGapSet[i].firstGap != NULL){
           align1(referenceGapSet[i].firstGap, fillingGapSet[i].firstGap, c, m);
-          //fprintf(fp, "%s\n", referenceGapSet[i].firstGap);
-          //fprintf(fp, "%s\n", fillingGapSet[i].firstGap);
       }
-      int s = 0;
-      int t = 0;
+      long int s = 0;
+      long int t = 0;
       c = &s;
       m = &t;
       if(referenceGapSet[i].secondGap != NULL && fillingGapSet[i].firstGap != NULL){
           align1(referenceGapSet[i].secondGap, fillingGapSet[i].firstGap, c, m);
-          //fprintf(fp, "%s\n", referenceGapSet[i].secondGap);
-          //fprintf(fp, "%s\n", fillingGapSet[i].firstGap);
       }
       long int index = -1;
       if(referenceGapSet[i].gapType == 21 || referenceGapSet[i].gapType == 22 || referenceGapSet[i].gapType == 23){
@@ -574,6 +569,7 @@ int main(int argc, char* argv[])
       if(referenceGapSet[i].gapType == 0){
           index = 5;
       }
+      referenceGapSet[i].count = 0;
       if(index == 1 || index == 2 || index == 3){
           if(fillingGapSet[i].gapType == 0){
               if(a > s){
@@ -642,10 +638,14 @@ int main(int argc, char* argv[])
   double r = 0;
   double f = 0;
   
-  fprintf(fp, "Gap Type            \tGap Count \tReference Gap Length\tGap-closed Length   \tMatch Number   \tMis-match Number    \tPrecision \tRecall    \tF1-score  \n");
+  fprintf(fp, "Gap Type            \tGap Count \tReference Gap Length\tGap-filled Length   \tMatch Number   \tMis-match Number    \tPrecision \tRecall    \tF1-score  \n");
   
   i = 0;
   char * gap_type_name = (char *)malloc(sizeof(char)*30);
+  long int allRealGapLength = 0;
+  long int allMatchCount = 0;
+  long int allMisMatchCount = 0;
+  long int allFillLength = 0;
   while(i < 6){
       if(i == 0){
           strcpy(gap_type_name, "Missing Gap");
@@ -657,9 +657,15 @@ int main(int argc, char* argv[])
           strcpy(gap_type_name, "Relocation Gap");
       }else if(i == 4){
           strcpy(gap_type_name, "Overlap Gap");
+          i++;
+          continue;
       }else if(i == 5){
-          strcpy(gap_type_name, "Correct Gap");
+          strcpy(gap_type_name, "Normal Gap");
       }
+      allRealGapLength = allRealGapLength + realGapLength[i];
+      allMatchCount = allMatchCount + matchCount[i];
+      allMisMatchCount = allMisMatchCount + misMatchCount[i];
+      allFillLength = allFillLength + fillingGapLength[i];
       if(fillingGapLength[i] == 0 || realGapLength[i] == 0 || matchCount[i] == 0){
           fprintf(fp, "%-20s\t%-10ld\t%-20ld\t%-20ld\t%-15ld\t%-20ld\t-         \t-         \t-         \n", gap_type_name, gap_count[i], realGapLength[i], fillingGapLength[i], matchCount[i], misMatchCount[i]);
       }else{
@@ -670,6 +676,17 @@ int main(int argc, char* argv[])
       }
       i++;
   }
+  strcpy(gap_type_name, "All Gap");
+  if(allFillLength == 0 || allRealGapLength == 0 || allMatchCount == 0){
+      fprintf(fp, "%-20s\t%-10ld\t%-20ld\t%-20ld\t%-15ld\t%-20ld\t-         \t-         \t-         \n", gap_type_name, gapCount, allRealGapLength, allFillLength, allMatchCount, allMisMatchCount);
+  }else{
+      p = (double)allMatchCount/(double)(allMatchCount+allMisMatchCount);
+      r = (double)allMatchCount/(double)allRealGapLength;
+      f = 2*p*r/(p+r);
+      fprintf(fp, "%-20s\t%-10ld\t%-20ld\t%-20ld\t%-15ld\t%-20ld\t%-10.3f\t%-10.3f\t%-10.3f\n", gap_type_name, gapCount, allRealGapLength, allFillLength, allMatchCount, allMisMatchCount, p, r, f);
+  }
+  
+  
   free(gap_type_name);
   
   fclose(fp);

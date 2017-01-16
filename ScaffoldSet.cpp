@@ -12,7 +12,7 @@
 using namespace std;
 
 
-ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName){
+ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName, long int minContigLength){
     
     long int i = 0;
     long int j = 0;
@@ -55,7 +55,7 @@ ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName){
     scaffoldSetHead->contigCount = 0;
     scaffoldSetHead->gapCount = 0;
     scaffoldSetHead->minGapDistance = 1;
-    scaffoldSetHead->minContigLength = 500;
+    scaffoldSetHead->minContigLength = minContigLength;
     
     
     for(i = 0; i < scaffoldCount; i++){ 
@@ -92,9 +92,9 @@ ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName){
            scaffoldIndex++;
            allocateLength = 0;
            char * p = strtok(scaffold, " ");
-           scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName = (char *)malloc(sizeof(char)*(strlen(p)+10));
+           scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName = (char *)malloc(sizeof(char)*(strlen(p)+1));
            strncpy(scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName, p, strlen(p));
-           sprintf(scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName + strlen(p), "_%ld", scaffoldIndex);
+           //sprintf(scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName + strlen(p), "_%ld", scaffoldIndex);
            continue;
            
        }
@@ -225,9 +225,6 @@ void GetGapInScaffoldSet(ScaffoldSetHead * scaffoldSetHead){
 }
 
 void OptimizeShortContigToGap(ScaffoldSetHead * scaffoldSetHead){
-    //char * tempFile = new char[20];
-    //strcpy(tempFile, "scaffold_infor.fa");
-    //WriteScaffoldSet(scaffoldSetHead, tempFile);
     for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
         long int shortContigCount = 0;
         if(scaffoldSetHead->scaffoldSet[i].gapCount <= 0){
@@ -325,8 +322,7 @@ void OptimizeShortContigToGap(ScaffoldSetHead * scaffoldSetHead){
         
         
     }
-    //strcpy(tempFile, "scaffold_infor_optimize.fa");
-    //WriteScaffoldSet(scaffoldSetHead, tempFile);
+
     
 }
 

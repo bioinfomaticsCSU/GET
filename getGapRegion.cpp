@@ -16,24 +16,24 @@ using namespace std;
 int main(int argc, char *argv[])
 {  
     
-    ScaffoldSetHead * scaffoldSetHead = GetScaffoldSetFromScaffoldFile(argv[1]);
-    cout<<"aa"<<endl;
+    ScaffoldSetHead * scaffoldSetHead = GetScaffoldSetFromScaffoldFile(argv[1], atoi(argv[9]));
+    
+    scaffoldSetHead->minSegmentDistanceEndLength = atoi(argv[10]);
+    scaffoldSetHead->minDistanceRelocationLength = atoi(argv[11]);
+    scaffoldSetHead->minTimesRelocation = atoi(argv[12]);
+    
+
     AlignmentSetHead * referenceAlignmentSetHead = GetAlignmentSet(argv[2]);
     ContigSetHead * referenceContigSetHead = GetContigSet(argv[3]);
-    cout<<"bb00"<<endl;
     ScaffoldGapRegion * scaffoldGapRegion = GetScaffoldGapRegionInReference(scaffoldSetHead, referenceAlignmentSetHead, referenceContigSetHead, true);
-    cout<<"bb"<<endl;
 
     AlignmentSetHead * fillingAlignmentSetHead = GetAlignmentSet(argv[5]);
     ContigSetHead * fillingContigSetHead = GetContigSet(argv[6]);
     ScaffoldGapRegion * scaffoldFillingGapRegion = GetScaffoldGapRegionInReference(scaffoldSetHead, fillingAlignmentSetHead, fillingContigSetHead, false);
-    CheckFillingGapRegion(scaffoldSetHead, scaffoldFillingGapRegion);
-    cout<<"cc"<<endl;
-    OutputReferenceGapRegion1(scaffoldSetHead, scaffoldGapRegion, scaffoldFillingGapRegion, referenceContigSetHead, argv[4]);
-    //OutputReferenceGapRegion(scaffoldSetHead, scaffoldGapRegion, referenceContigSetHead, argv[4]);
-    cout<<"dd"<<endl;
+
+    OutputReferenceGapRegion(scaffoldSetHead, scaffoldGapRegion, scaffoldFillingGapRegion, referenceContigSetHead, argv[4]);
+
     OutputScaffoldGapRegion(scaffoldSetHead, scaffoldFillingGapRegion, fillingContigSetHead, argv[7]);
-    cout<<"ee"<<endl;
 
     OutputGapInScaffoldInformation(scaffoldSetHead, scaffoldGapRegion, scaffoldFillingGapRegion, argv[8]);
     
