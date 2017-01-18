@@ -92,8 +92,9 @@ ScaffoldSetHead * GetScaffoldSetFromScaffoldFile(char * scaffoldFileName, long i
            scaffoldIndex++;
            allocateLength = 0;
            char * p = strtok(scaffold, " ");
-           scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName = (char *)malloc(sizeof(char)*(strlen(p)+1));
-           strncpy(scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName, p, strlen(p));
+           scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName = (char *)malloc(sizeof(char)*(strlen(p)-1));
+           strncpy(scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName, p+1, strlen(p)-2);
+           scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName[strlen(p)-2] = '\0';
            //sprintf(scaffoldSetHead->scaffoldSet[scaffoldIndex].scaffoldName + strlen(p), "_%ld", scaffoldIndex);
            continue;
            

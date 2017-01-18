@@ -891,8 +891,8 @@ void OutputGapInScaffoldInformation(ScaffoldSetHead * scaffoldSetHead, ScaffoldG
     fprintf(fp, "14-th column:\tname of gap-closed scaffold which the right flanking region is aligned to;\n");
     fprintf(fp, "15-th column:\taligning strand of the left flanking region for the gap-closed scaffold;\n");
     fprintf(fp, "16-th column:\taligning strand of the right flanking region for the gap-closed scaffold;\n");
-    fprintf(fp, "17-th column:\tgap type about gap-closed scaffold;\n");
-    
+    //fprintf(fp, "17-th column:\tgap type about gap-closed scaffold;\n");
+    fprintf(fp, "\n");
     for(long int i = 0; i < scaffoldSetHead->scaffoldCount; i++){
         if(scaffoldSetHead->scaffoldSet[i].gapCount <=0){
             continue;
