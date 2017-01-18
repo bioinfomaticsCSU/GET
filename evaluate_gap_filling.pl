@@ -15,7 +15,7 @@ use Getopt::Long;
 	or die("Error in command line arguments\n");
 	
 	if(-e $output_directory){
-		unlink glob "$output_directory/*";
+		#unlink glob "$output_directory/*";
 	}else{
 		mkdir($output_directory);
 	}
@@ -54,7 +54,9 @@ use Getopt::Long;
 	my $gap_in_reference_file = "$output_directory/gap_in_reference.txt";
 	my $gap_in_filling_file = "$output_directory/gap_in_filling.txt";
 	my $result_file = "$output_directory/result.txt";
-	
+	if(-e $result_file){
+		unlink glob $result_file;
+	}
 	my $gap_infor = "$output_directory/gap_infor.txt";
 	@temp = ("./getGapRegion $scaffold_file $reference_nucmer_out_coords $reference_file $gap_in_reference_file $scaffold_filling_nucmer_out_coords $scaffold_filling_file $gap_in_filling_file $gap_infor $min_contig_length $min_contig_end_distance $max_distance_normal_gap $times_gap_distance");
 	system(@temp) == 0 or die print OUT "When running getGapRegion, there is an error occuring.\n";
