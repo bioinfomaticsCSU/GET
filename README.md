@@ -76,7 +76,9 @@ GET
 	Normal Gap          	64        	17954               	10149               	9977           	172                 	0.983     	0.556   	0.710     
 	All Gap             	125       	24280               	16008               	15791          	217                 	0.986     	0.650   	0.784    
 	
-	The gap locations on the original scaffold, gap-filled scaffold and the reference genome are showed in the file "infor.txt".  
+	The gap locations on the original scaffold, gap-filled scaffold and the reference genome are showed in the file "infor.txt". 
+	The gap references and gap-filled regions of all gaps are shown in the files "gap_in_reference.txt" and "gap_in_filling.txt" respectively.
+
 	
 	
 	
