@@ -36,13 +36,13 @@ GET
 	Users can download MUMmer from http://mummer.sourceforge.net/
 
 3) Installing
-
+	
 	GET is written C++ and therefore will require a machine with GNU C++ pre-installed.
 	Create a main directory (eg:GET). Copy all source code to this directory.
 	Type "make all".
 
 4) Running
-
+	
 	Run command line:  
 	perl evaluate_gap_filling.pl -s original_scaffolds.fa -f gap-filled_scaffolds.fa -r reference_genome.fa -o output_directory [options]
 	-s <scaffold file>
@@ -63,7 +63,7 @@ GET
 		Optional parameter. It is also used to define Relocation gap. Default value 3.
 	
 5) Output:
-
+	
 	The final evaluation result is named "result.txt" in the output directory.
 	The first column is the gap type, it shows the evaluation mertics from second column to nine column based on each gap type.
 	The last row shows the evaluation metrics based on all gap types.
