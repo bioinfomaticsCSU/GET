@@ -42,7 +42,7 @@ GET
 	Type "make all".
 
 4) Running
-
+```
 	Run command line:
 	perl evaluate_gap_filling.pl -s original_scaffolds.fa -f gap-filled_scaffolds.fa -r reference_genome.fa -o output_directory [options]
 
@@ -62,7 +62,7 @@ GET
 		Optional parameter. It is used to define Relocation gap. Default value 3000.
 	-a <mininum times>
 	Optional parameter. It is also used to define Relocation gap. Default value 3.
-
+```
 5) Output:
 
 	The final evaluation result is named "result.txt" in the output directory.
