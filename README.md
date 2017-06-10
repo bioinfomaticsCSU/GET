@@ -37,7 +37,7 @@ GET
 
 3) Installing
 
-	GET is written C++ and therefore will require a machine with GNU C++ pre-installed.
+	GET should run on Linux operating system with gcc 4.6.3. (We test GET using gcc4.6.3 on Ubuntu)
 	Create a main directory (eg:GET). Copy all source code to this directory.
 	Type "make all".
 
